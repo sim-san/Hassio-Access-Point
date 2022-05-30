@@ -203,9 +203,9 @@ if [ $DHCP -eq 1 ]; then
     if [ $CLIENT_INTERNET_ACCESS -eq 1 ]; then
         
         ## Route traffic
-        iptables -t nat -A POSTROUTING -o $INTERNET_INTERFACE -j MASQUERADE
-        iptables -P FORWARD ACCEPT
-        iptables -F FORWARD
+	iptables -v -t nat -A POSTROUTING -o $INTERNET_INTERFACE -j MASQUERADE
+	iptables -v -A FORWARD -i $INTERNET_INTERFACE -o $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT
+	iptables -v -A FORWARD -i $INTERFACE -o $INTERNET_INTERFACE -j ACCEPT
     fi
 else
 	logger "# DHCP not enabled. Skipping dnsmasq" 1
@@ -213,9 +213,9 @@ else
     ## No DHCP == No DNS. Must be set manually on client.
     ## Step 1: Routing
     if [ $CLIENT_INTERNET_ACCESS -eq 1 ]; then
-        iptables -t nat -A POSTROUTING -o $INTERNET_INTERFACE -j MASQUERADE
-        iptables -P FORWARD ACCEPT
-        iptables -F FORWARD
+	iptables -v -t nat -A POSTROUTING -o $INTERNET_INTERFACE -j MASQUERADE
+	iptables -v -A FORWARD -i $INTERNET_INTERFACE -o $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT
+	iptables -v -A FORWARD -i $INTERFACE -o $INTERNET_INTERFACE -j ACCEPT
     fi
 fi
 
